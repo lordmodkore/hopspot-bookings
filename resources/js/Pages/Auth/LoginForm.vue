@@ -1,4 +1,14 @@
 <template>
+    <FlashMessage
+        v-if="$page.props.flash.success"
+        :message="$page.props.flash.success"
+        type="success"
+    />
+    <FlashMessage
+        v-if="$page.props.flash.error"
+        :message="$page.props.flash.error"
+        type="error"
+    />
     <div class="relative overflow-hidden bg-gray-100 min-h-screen">
         <div class="relative z-5">
             <div class="flex flex-col lg:flex-row">
@@ -7,23 +17,19 @@
                 </div>
                 <div class="lg:w-1/2 flex items-center justify-center min-h-screen bg-white p-4">
                     <div class="w-full max-w-md">
-                        <!-- Success and Error Messages -->
-                        <div v-if="successMessage" class="bg-green-100 border border-green-400 text-green-700 p-4 mb-4 rounded">
-                            {{ successMessage }}
-                        </div>
 
                         <h2 class="text-2xl font-bold mb-3 text-center">Welcome to HopSpot Admin</h2>
 
                         <!-- Social Login Buttons -->
                         <div class="flex space-x-4 mb-4">
-                            <a class="flex-1 bg-white border border-gray-300 text-gray-800 py-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition" href="{{ route('auth.google') }}">
+                            <button @click="signInWithGoogle" class="flex-1 bg-white border border-gray-300 text-gray-800 py-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition">
                                 <img :src="props.googleIconUrl" alt="Google Icon" class="mr-2" width="18" height="18">
                                 <span>Sign in with Google</span>
-                            </a>
-                            <a class="flex-1 bg-white border border-gray-300 text-gray-800 py-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition" href="{{ route('auth.facebook') }}">
+                            </button>
+                            <button @click="signInWithFacebook" class="flex-1 bg-white border border-gray-300 text-gray-800 py-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition">
                                 <img :src="props.facebookIconUrl" alt="Facebook Icon" class="mr-2" width="18" height="18">
                                 <span>Sign in with FB</span>
-                            </a>
+                            </button>
                         </div>
 
                         <div class="relative text-center my-4">
@@ -31,7 +37,7 @@
                             <span class="border-t w-full absolute top-1/2 left-0"></span>
                         </div>
 
-                        <form @submit.prevent="submit" >
+                        <form @submit.prevent="submit">
                             <div class="mb-4">
                                 <label for="email" class="block text-gray-700">Username</label>
                                 <input
@@ -42,7 +48,9 @@
                                     placeholder="you@example.com"
                                     :class="{ 'border-red-500': form.errors.email }"
                                 />
-
+                            </div>
+                            <div v-if="form.errors.email" class="alert alert-danger">
+                                {{ form.errors.email[0] }}
                             </div>
                             <div class="mb-4">
                                 <label for="password" class="block text-gray-700">Password</label>
@@ -54,9 +62,9 @@
                                     :class="{ 'border-red-500': form.errors.password }"
                                     placeholder="********"
                                 />
-<!--                                <div v-if="form.errors.password" class="alert alert-danger">-->
-<!--                                    {{ form.errors.password }}-->
-<!--                                </div>-->
+                                <div v-if="form.errors.password" class="alert alert-danger">
+                                    {{ form.errors.password[0] }}
+                                </div>
                             </div>
                             <div class="flex justify-between items-center mb-4">
                                 <div class="flex items-center">
@@ -84,18 +92,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useForm } from '@inertiajs/inertia-vue3';
-import { ZiggyVue } from 'ziggy';
+import { useForm, usePage } from '@inertiajs/inertia-vue3';
+import { defineProps } from 'vue';
+import { defineOptions } from 'vue';
+import FlashMessage from '@/Components/FlashMessage.vue';
 
-
+// Define your own props for additional URLs
 const props = defineProps({
     logoUrl: String,
     googleIconUrl: String,
     facebookIconUrl: String,
+    errors: Object, // Add this line to accept errors as a prop
+    auth: Object,   // Add this line to accept auth as a prop
 });
+// Define props if needed
 
-// Initialize useForm with an object that includes errors.
+
+
+// Initialize the form
 const form = useForm({
     email: '',
     password: '',
@@ -103,18 +117,25 @@ const form = useForm({
 });
 
 // Form submit handler
-// Form submit handler
 const submit = () => {
-    form.post(route('login'), {
+    form.post(route('processLogin'), {
         onSuccess: () => {
-            // Handle successful login, e.g., redirect
-            window.location.href = '/dashboard';
+            // Handle success (e.g., redirect)
         },
-        onFinish: () => {
-            // Optional: Perform any additional actions after the form is submitted
-
+        onError: (errors) => {
+            // Handle errors (e.g., show validation errors)
         },
     });
 };
 
+// Sign in with Google
+const signInWithGoogle = () => {
+    window.location.href = route('auth.google'); // Redirect to Laravel for Google authentication
+};
+// Sign in with Facebook
+const signInWithFacebook = () => {
+    window.location.href = route('auth.facebook'); // Redirect to Laravel for Facebook authentication
+};
+
 </script>
+

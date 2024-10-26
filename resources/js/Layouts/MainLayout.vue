@@ -1,19 +1,29 @@
 <template>
+    <FlashMessage
+        v-if="$page.props.flash.success"
+        :message="$page.props.flash.success"
+        type="success"
+    />
+    <FlashMessage
+        v-if="$page.props.flash.error"
+        :message="$page.props.flash.error"
+        type="error"
+    />
     <LoadingOverlay :logoUrl="logoUrl" />
-    <div v-if="flashSuccess" class="success">
-        {{ flashSuccess }}
-    </div>
-    <slot></slot>
+    <slot :logoUrl="logoUrl" :googleIconUrl="googleIconUrl" :facebookIconUrl="facebookIconUrl"></slot>
 </template>
 
 <script setup>
-import {ref} from "vue";
-import { computed } from 'vue'
-import { Link, usePage } from '@inertiajs/inertia-vue3'
+import {Link, usePage } from '@inertiajs/inertia-vue3';
+import { ref, onMounted,computed,reactive, toRefs } from 'vue';
 import LoadingOverlay from '@/Components/LoadingOverlay.vue';
-const page = usePage()
-const flashSuccess = computed(() => page.props.flash?.success);
-const flashError = computed(() => page.props.flash?.error);
+import FlashMessage from '@/Components/FlashMessage.vue';
+
+
+// Log the loginProps to see its structure
+
 // Directly set the logo URL
 const logoUrl = '/images/logo-dark.png'; // Adjust the path to your logo
+const googleIconUrl = '/images/google-icon.png'; // Set the path for Google icon
+const facebookIconUrl = '/images/facebook-icon.png';
 </script>

@@ -6,22 +6,29 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Log;
 
 class LoginController extends Controller
 {
-    public function login(Request $request)
+    public function processLogin(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            // Authentication passed, redirect to dashboard or home page
-            return redirect()->intended('/')->with('success', 'You are logged in!');
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            return redirect()->route('home')->with('success', 'Logged in successfully!');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
+        return redirect()->route('login')->with('flash', [
+            'success' => 'You have logged in successfully!',
+            'error' => 'Login failed. Please try again.',
+        ]);
+
+
     }
     public function logout(Request $request)
     {
@@ -32,7 +39,8 @@ class LoginController extends Controller
 
         return Inertia::location(route('login'));  // Redirect to login page
     }
-    public function show()
+
+    public function showLoginForm()
     {
         return Inertia::render('Auth/LoginForm', [
             'logoUrl' => asset('images/logo-dark.png'),
