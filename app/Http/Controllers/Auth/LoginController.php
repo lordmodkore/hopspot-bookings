@@ -12,23 +12,23 @@ class LoginController extends Controller
 {
     public function processLogin(Request $request)
     {
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'remember_me' => 'boolean',
         ]);
 
+
+        $remember = $request->input('remember_me', false);
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->route('home')->with('success', 'Logged in successfully!');
+        if (Auth::attempt($credentials, $remember)) {
+            return redirect()->route('home')->with('flash', ['success' => 'Logged In successfully!']);
         }
 
-        return redirect()->route('login')->with('flash', [
-            'success' => 'You have logged in successfully!',
-            'error' => 'Login failed. Please try again.',
-        ]);
 
-
+        return redirect()->route('login')->with('flash', ['error' => 'Invalid credentials!']);
     }
     public function logout(Request $request)
     {
@@ -37,11 +37,14 @@ class LoginController extends Controller
         $request->session()->invalidate();  // Invalidate the session
         $request->session()->regenerateToken();  // Regenerate the CSRF token for security
 
-        return Inertia::location(route('login'));  // Redirect to login page
+        return redirect()->route('login')->with('flash', ['success' => 'Logged out successfully!']);
+
     }
 
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+
+
         return Inertia::render('Auth/LoginForm', [
             'logoUrl' => asset('images/logo-dark.png'),
             'googleIconUrl' => asset('images/svgs/google-icon.svg'),

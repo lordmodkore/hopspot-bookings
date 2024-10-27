@@ -1,14 +1,4 @@
 <template>
-    <FlashMessage
-        v-if="$page.props.flash.success"
-        :message="$page.props.flash.success"
-        type="success"
-    />
-    <FlashMessage
-        v-if="$page.props.flash.error"
-        :message="$page.props.flash.error"
-        type="error"
-    />
     <div class="relative overflow-hidden bg-gray-100 min-h-screen">
         <div class="relative z-5">
             <div class="flex flex-col lg:flex-row">
@@ -95,15 +85,13 @@
 import { useForm, usePage } from '@inertiajs/inertia-vue3';
 import { defineProps } from 'vue';
 import { defineOptions } from 'vue';
-import FlashMessage from '@/Components/FlashMessage.vue';
+
 
 // Define your own props for additional URLs
 const props = defineProps({
     logoUrl: String,
     googleIconUrl: String,
     facebookIconUrl: String,
-    errors: Object, // Add this line to accept errors as a prop
-    auth: Object,   // Add this line to accept auth as a prop
 });
 // Define props if needed
 

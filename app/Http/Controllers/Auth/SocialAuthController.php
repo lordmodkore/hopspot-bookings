@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Auth;
@@ -78,11 +79,12 @@ class SocialAuthController extends Controller
             $user = User::create([
                 'name' => $socialUser->getName(),
                 'email' => $socialUser->getEmail(),
-                'password' => bcrypt(str_random(16)), // Create a random password
+                'password' => bcrypt(Str::random(16)), // Create a random password
             ]);
         }
 
         Auth::login($user, true);
-        return redirect()->intended('/')->with('success', 'You are logged in!');
+        return redirect()->intended('/')->with('flash', ['success' => 'You are logged in!']);
+
     }
 }
