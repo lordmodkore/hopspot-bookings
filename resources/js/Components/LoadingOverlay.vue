@@ -1,14 +1,16 @@
 <template>
     <transition name="fade" mode="out-in">
         <div v-if="isLoading" key="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50" role="alert">
-            <img :src="logoUrl" alt="Loading..." class="w-80" />
+            <div class="loading-container">
+                <img :src="logoUrl" alt="Loading..." class="loading-logo" />
+                <p class="loading-text">Loading, please wait...</p>
+            </div>
         </div>
     </transition>
 </template>
 
 <script setup>
-import {ref, onMounted, onBeforeUnmount} from 'vue';
-import {router} from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
 
 const props = defineProps({
     logoUrl: {
@@ -19,40 +21,67 @@ const props = defineProps({
 
 const isLoading = ref(false);
 
-// Set loading state on navigation
+// Function to manually start loading
 const startLoading = () => {
     isLoading.value = true;
 };
 
-const stopLoading = (event) => {
-    // Check if the navigation was successful
-    if (event.detail.status >= 200 && event.detail.status < 400) {
-        setTimeout(() => {
-            isLoading.value = false;
-        }, 200); // Adjust delay time as needed
-    } else {
-        isLoading.value = false; // Stop loading on error
+// Function to manually stop loading
+const stopLoading = () => {
+    isLoading.value = false;
+};
+
+// Example functions to simulate a network request
+const fetchData = async () => {
+    startLoading();
+    try {
+        // Simulate a network request with a timeout
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Here you can handle your data after fetching
+    } catch (error) {
+        console.error("An error occurred:", error);
+    } finally {
+        stopLoading();
     }
 };
 
-// Listen for Inertia navigation events
+// Call fetchData to simulate loading when the component is mounted
 onMounted(() => {
-    router.on('start', startLoading);
-    router.on('finish', stopLoading);
-});
-
-onBeforeUnmount(() => {
-    router.off('start', startLoading);
-    router.off('finish', stopLoading);
+    fetchData();
 });
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-    transition: opacity 0.5s ease;
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
     opacity: 0;
+    transform: scale(1.05); /* Slightly scale up for entrance */
+}
+
+.loading-container {
+    text-align: center;
+}
+
+.loading-logo {
+    width: 400px; /* Adjust size as needed */
+}
+
+.loading-text {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #333; /* Change text color as needed */
+    opacity: 0; /* Start with hidden text */
+    animation: fadeIn 1s forwards; /* Fade in effect for text */
+    animation-delay: 0.5s; /* Delay text appearance */
+}
+
+/* Fade In Animation for the text */
+@keyframes fadeIn {
+    to { opacity: 1; }
 }
 </style>
