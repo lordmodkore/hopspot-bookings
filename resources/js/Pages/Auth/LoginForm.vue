@@ -1,4 +1,5 @@
-<template><!-- But this doesn't, it's empty :( -->
+<template>
+    <!-- But this doesn't, it's empty :( -->
     <div class="relative overflow-hidden bg-gray-100 min-h-screen">
         <div class="relative z-5">
             <div class="flex flex-col lg:flex-row">
@@ -45,7 +46,7 @@
                                     :class="{ 'border-red-500': form.errors.email }"
                                 />
                                 <!-- Display error message for email -->
-                                <p v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</p>
+                                <p v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email[0] }}</p>
                             </div>
                             <div class="mb-4">
                                 <label for="password" class="block text-gray-700">Password</label>
@@ -58,7 +59,7 @@
                                     placeholder="********"
                                 />
                                 <!-- Display error message for email -->
-                                <p v-if="form.errors.password" class="text-red-500 text-sm mt-1">{{ form.errors.password }}</p>
+                                <p v-if="form.errors.password" class="text-red-500 text-sm mt-1">{{ form.errors.password[0] }}</p>
 
                             </div>
                             <div class="flex justify-between items-center mb-4">
@@ -84,12 +85,13 @@
             </div>
         </div>
     </div>
+
 </template>
 
 <script setup>
 import { useForm } from '@inertiajs/vue3';
 import { defineProps,ref } from 'vue';
-
+import LoadingOverlay from '@/Components/LoadingOverlay.vue';
 
 // Define your own props for additional URLs
 const props = defineProps({
