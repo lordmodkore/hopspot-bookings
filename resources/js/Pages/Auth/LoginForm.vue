@@ -1,4 +1,4 @@
-<template>
+<template><!-- But this doesn't, it's empty :( -->
     <div class="relative overflow-hidden bg-gray-100 min-h-screen">
         <div class="relative z-5">
             <div class="flex flex-col lg:flex-row">
@@ -27,7 +27,7 @@
                             <span class="border-t w-full absolute top-1/2 left-0"></span>
                         </div>
 
-                        <form @submit.prevent="submit">
+                        <form @submit.prevent="login">
                             <div class="mb-4">
                                 <label for="email" class="block text-gray-700">Username</label>
                                 <input
@@ -38,10 +38,9 @@
                                     placeholder="you@example.com"
                                     :class="{ 'border-red-500': form.errors.email }"
                                 />
+                                <span v-if="errors.email" class="text-red-500 text-sm mt-1 block">{{ errors.email[0] }}</span>
                             </div>
-                            <div v-if="form.errors.email" class="alert alert-danger">
-                                {{ form.errors.email[0] }}
-                            </div>
+                            <div v-if="form.errors.password" class="input-error">{{ form.errors.email }}</div>
                             <div class="mb-4">
                                 <label for="password" class="block text-gray-700">Password</label>
                                 <input
@@ -52,9 +51,7 @@
                                     :class="{ 'border-red-500': form.errors.password }"
                                     placeholder="********"
                                 />
-                                <div v-if="form.errors.password" class="alert alert-danger">
-                                    {{ form.errors.password[0] }}
-                                </div>
+
                             </div>
                             <div class="flex justify-between items-center mb-4">
                                 <div class="flex items-center">
@@ -82,40 +79,30 @@
 </template>
 
 <script setup>
-import { useForm, usePage } from '@inertiajs/inertia-vue3';
-import { defineProps } from 'vue';
-import { defineOptions } from 'vue';
+import { useForm } from '@inertiajs/inertia-vue3';
+import { defineProps,ref } from 'vue';
 
 
 // Define your own props for additional URLs
 const props = defineProps({
+    errors: Object,
     logoUrl: String,
     googleIconUrl: String,
     facebookIconUrl: String,
 });
-// Define props if needed
-
-
 
 // Initialize the form
 const form = useForm({
-    email: '',
-    password: '',
+    email: null,
+    password: null,
     remember_me: false,
 });
 
-// Form submit handler
-const submit = () => {
-    form.post(route('processLogin'), {
-        onSuccess: () => {
-            // Handle success (e.g., redirect)
-        },
-        onError: (errors) => {
-            // Handle errors (e.g., show validation errors)
-        },
-    });
-};
 
+
+console.log(form)
+// Form submit handler
+const login = () => form.post(route('processLogin'));
 // Sign in with Google
 const signInWithGoogle = () => {
     window.location.href = route('auth.google'); // Redirect to Laravel for Google authentication
