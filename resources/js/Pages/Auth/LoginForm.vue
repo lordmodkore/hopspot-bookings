@@ -72,7 +72,8 @@
                                     />
                                     <label for="remember_me" class="text-gray-600">Remember this Device</label>
                                 </div>
-                                <a class="text-blue-600" href="{{route('forgot')}}">Forgot Password?</a>
+                                <a class="text-blue-600" :href="route('password.reset.form')">Forgot Password?</a>
+
                             </div>
                             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">Sign In</button>
                             <div class="flex justify-center items-center mt-4">
@@ -92,6 +93,7 @@
 import { useForm } from '@inertiajs/vue3';
 import { defineProps,ref } from 'vue';
 import LoadingOverlay from '@/Components/LoadingOverlay.vue';
+import {route} from "ziggy-js";
 
 // Define your own props for additional URLs
 const props = defineProps({
@@ -119,6 +121,7 @@ const signInWithGoogle = () => {
 const signInWithFacebook = () => {
     window.location.href = route('auth.facebook'); // Redirect to Laravel for Facebook authentication
 };
+
 
 </script>
 
