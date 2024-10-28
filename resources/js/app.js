@@ -2,14 +2,19 @@ import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import MainLayout from '@/Layouts/MainLayout.vue'
 import '../css/app.css'; // Import Tailwind CSS
-import { ZiggyVue } from 'ziggy';
+import { ZiggyVue } from 'ziggy-js';
 
 createInertiaApp({
   resolve: async name => {
 
     const pages = import.meta.glob('./Pages/**/*.vue')
     const page = await pages[`./Pages/${name}.vue`]()
-    page.default.layout = page.default.layout || MainLayout
+      // Check if the page is the LoginForm
+      if (name === 'Auth/LoginForm') {  // Adjusted to check for the full path
+          page.default.layout = null; // Disable the layout for LoginForm
+      } else {
+          page.default.layout = page.default.layout || MainLayout; // Use MainLayout for other pages
+      }
     return page
   },
   setup({ el, App, props, plugin }) {

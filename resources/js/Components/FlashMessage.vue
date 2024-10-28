@@ -1,17 +1,16 @@
 <template>
-    <div v-if="visible" :class="`bg-${type === 'error' ? 'red' : 'green'}-100 border-l-4 border-${type === 'error' ? 'red' : 'green'}-500 text-${type === 'error' ? 'red' : 'green'}-700 p-4 rounded-lg flex justify-between items-center`">
+    <div v-if="visible" :class="notificationClass">
         <div class="flex items-center">
             <span class="ml-2">{{ message }}</span>
         </div>
-        <button @click="clear" class="text-${type === 'error' ? 'red' : 'green'}-700 hover:text-${type === 'error' ? 'red' : 'green'}-900 ml-4">
+        <button @click="clear" :class="buttonClass">
             &times; <!-- Close icon -->
         </button>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { defineProps } from 'vue';
+import { defineProps, ref, computed } from 'vue';
 
 const props = defineProps({
     message: {
@@ -31,5 +30,22 @@ const visible = ref(true);
 const clear = () => {
     visible.value = false;
 };
+
+// Computed property for notification classes
+const notificationClass = computed(() => {
+    const baseClasses = 'border-l-4 p-4 flex justify-between items-center';
+    const colorClasses = props.type === 'error'
+        ? 'bg-red-100 border-red-500 text-red-700'
+        : 'bg-green-100 border-green-500 text-green-700';
+    return `${baseClasses} ${colorClasses}`;
+});
+
+// Computed property for button classes
+const buttonClass = computed(() => {
+    return `text-${props.type === 'error' ? 'red' : 'green'}-700 hover:text-${props.type === 'error' ? 'red' : 'green'}-900 ml-4`;
+});
 </script>
 
+<style scoped>
+/* Optional: add any additional styles here if needed */
+</style>

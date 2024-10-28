@@ -1,6 +1,6 @@
 <template>
     <transition name="fade" mode="out-in">
-        <div v-if="isLoading" key="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div v-if="isLoading" key="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50" role="alert">
             <img :src="logoUrl" alt="Loading..." class="w-80" />
         </div>
     </transition>
@@ -8,7 +8,7 @@
 
 <script setup>
 import {ref, onMounted, onBeforeUnmount} from 'vue';
-import {Inertia} from '@inertiajs/inertia';
+import {router} from '@inertiajs/vue3';
 
 const props = defineProps({
     logoUrl: {
@@ -24,22 +24,26 @@ const startLoading = () => {
     isLoading.value = true;
 };
 
-const stopLoading = () => {
-    // Delay the loading overlay hide for a smoother transition
-    setTimeout(() => {
-        isLoading.value = false;
-    }, 2000); // Adjust the delay time as needed (500ms in this case)
+const stopLoading = (event) => {
+    // Check if the navigation was successful
+    if (event.detail.status >= 200 && event.detail.status < 400) {
+        setTimeout(() => {
+            isLoading.value = false;
+        }, 200); // Adjust delay time as needed
+    } else {
+        isLoading.value = false; // Stop loading on error
+    }
 };
 
 // Listen for Inertia navigation events
 onMounted(() => {
-    Inertia.on('start', startLoading);
-    Inertia.on('finish', stopLoading);
+    router.on('start', startLoading);
+    router.on('finish', stopLoading);
 });
 
 onBeforeUnmount(() => {
-    Inertia.off('start', startLoading);
-    Inertia.off('finish', stopLoading);
+    router.off('start', startLoading);
+    router.off('finish', stopLoading);
 });
 </script>
 

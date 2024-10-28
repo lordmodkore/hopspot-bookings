@@ -7,9 +7,15 @@
                 </div>
                 <div class="lg:w-1/2 flex items-center justify-center min-h-screen bg-white p-4">
                     <div class="w-full max-w-md">
-
                         <h2 class="text-2xl font-bold mb-3 text-center">Welcome to HopSpot Admin</h2>
+                        <!-- Flash Messages -->
+                        <div v-if="flash.error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                            <span class="block sm:inline">{{ flash.error }}</span>
+                        </div>
 
+                        <div v-if="flash.success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                            <span class="block sm:inline">{{ flash.success }}</span>
+                        </div>
                         <!-- Social Login Buttons -->
                         <div class="flex space-x-4 mb-4">
                             <button @click="signInWithGoogle" class="flex-1 bg-white border border-gray-300 text-gray-800 py-2 rounded-md flex items-center justify-center hover:bg-gray-100 transition">
@@ -38,9 +44,9 @@
                                     placeholder="you@example.com"
                                     :class="{ 'border-red-500': form.errors.email }"
                                 />
-                                <span v-if="errors.email" class="text-red-500 text-sm mt-1 block">{{ errors.email[0] }}</span>
+                                <!-- Display error message for email -->
+                                <p v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</p>
                             </div>
-                            <div v-if="form.errors.password" class="input-error">{{ form.errors.email }}</div>
                             <div class="mb-4">
                                 <label for="password" class="block text-gray-700">Password</label>
                                 <input
@@ -51,6 +57,8 @@
                                     :class="{ 'border-red-500': form.errors.password }"
                                     placeholder="********"
                                 />
+                                <!-- Display error message for email -->
+                                <p v-if="form.errors.password" class="text-red-500 text-sm mt-1">{{ form.errors.password }}</p>
 
                             </div>
                             <div class="flex justify-between items-center mb-4">
@@ -79,13 +87,13 @@
 </template>
 
 <script setup>
-import { useForm } from '@inertiajs/inertia-vue3';
+import { useForm } from '@inertiajs/vue3';
 import { defineProps,ref } from 'vue';
 
 
 // Define your own props for additional URLs
 const props = defineProps({
-    errors: Object,
+    flash: Object,
     logoUrl: String,
     googleIconUrl: String,
     facebookIconUrl: String,
@@ -99,8 +107,6 @@ const form = useForm({
 });
 
 
-
-console.log(form)
 // Form submit handler
 const login = () => form.post(route('processLogin'));
 // Sign in with Google

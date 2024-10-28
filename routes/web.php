@@ -9,6 +9,11 @@ use App\Http\Controllers\Auth\SocialAuthController;
 
 Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+});
+
+
+
+Route::middleware(['web'])->group(function () {
     Route::post('/process-login', [LoginController::class, 'processLogin'])->name('processLogin');
 });
 
