@@ -2,6 +2,7 @@ import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import MainLayout from '@/Layouts/MainLayout.vue'
 import '../css/app.css'; // Import Tailwind CSS
+import '@fortawesome/fontawesome-free/css/all.css';
 import { ZiggyVue } from 'ziggy-js';
 
 createInertiaApp({

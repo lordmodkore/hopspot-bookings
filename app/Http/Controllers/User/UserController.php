@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -16,9 +17,9 @@ class UserController extends Controller
     // Display a listing of the users.
     public function index()
     {
-        $users = User::all(); // Fetch all users
-        return Inertia::render('Users/Index', [
-            'users' => $users,
+        $users = User::with('roles')->get(); // Fetch users with roles
+        return inertia('Users/Index', [
+            'users' => $users
         ]);
     }
 
@@ -70,32 +71,47 @@ class UserController extends Controller
     // Show the form for editing the specified user.
     public function edit(User $user)
     {
+        $roles = Role::all();
+
+        $userRoles = $user->getRoleNames()->toArray();  // Assuming the role names are stored in the 'name' column
+
         return Inertia::render('Users/Edit', [
             'user' => $user,
+            'roles' => $roles,
+            'userRoles' => $userRoles, // Pass the user's roles to the view
         ]);
     }
+
 
     // Update the specified user in storage.
     public function update(Request $request, User $user)
     {
+        // Validate the incoming request data
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed', // Password is optional for update
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password'   => 'nullable|string|min:8|confirmed', // Password is optional for update
+            'roles'      => 'required|string|exists:roles,name', // Ensure a single role is provided and it exists
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('users.edit', $user)->withErrors($validator)->withInput();
+            return redirect()->route('users.edit', $user)
+                             ->withErrors($validator)
+                             ->withInput();
         }
 
         // Update user details
         $user->update([
-            'username' => $request->username,
+            'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password ? Hash::make($request->password) : $user->password, // Only hash if password is provided
         ]);
+        $user->syncRoles([$request->roles]); // Sync the role as an array
 
-        return redirect()->route('users.index')->with('flash', ['success' => 'Users updated successfully!']);
+        // Sync the single role provided
+
+
+        return redirect()->route('users.index')->with('flash', ['success' => 'User updated successfully!']);
     }
 
     // Remove the specified user from storage.
