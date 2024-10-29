@@ -27,7 +27,6 @@ export default defineConfig({
         },
       },
     }),
-
     copy({
       targets: [
           { src: 'resources/images/*', dest: 'public/images' }, // Copy all images from resources/images to public/images

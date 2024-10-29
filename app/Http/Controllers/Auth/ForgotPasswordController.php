@@ -25,7 +25,7 @@ class ForgotPasswordController extends Controller
 
         // Check the response status and redirect to login with a success message
         if ($status === Password::RESET_LINK_SENT) {
-            return redirect()->route('login')->with('flash', ['success' => __('A password reset link has been sent to your email.')]);
+            return redirect()->back()->with('flash', ['success' => __('A password reset link has been sent to your email.')]);
         } else {
             return back()->withErrors(['email' => __($status)]);
         }

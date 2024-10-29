@@ -10,11 +10,7 @@ createInertiaApp({
     const pages = import.meta.glob('./Pages/**/*.vue')
     const page = await pages[`./Pages/${name}.vue`]()
       // Check if the page is the LoginForm
-      if (name === 'Auth/LoginForm') {  // Adjusted to check for the full path
-          page.default.layout = null; // Disable the layout for LoginForm
-      } else {
           page.default.layout = page.default.layout || MainLayout; // Use MainLayout for other pages
-      }
     return page
   },
   setup({ el, App, props, plugin }) {

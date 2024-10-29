@@ -42,7 +42,7 @@ class LoginController extends Controller
     public function showLoginForm(Request $request)
     {
         return Inertia::render('Auth/LoginForm', [
-            'logoUrl' => asset('images/logo-dark.png'),
+            'logoUrl' => asset('images/logo.png'),
             'googleIconUrl' => asset('images/svgs/google-icon.svg'),
             'facebookIconUrl' => asset('images/svgs/facebook-icon.svg'),
         ]);

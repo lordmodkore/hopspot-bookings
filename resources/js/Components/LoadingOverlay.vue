@@ -2,7 +2,7 @@
     <transition name="fade" mode="out-in">
         <div v-if="isLoading" key="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50" role="alert">
             <div class="loading-container">
-                <img :src="logoUrl" alt="Loading..." class="loading-logo" />
+                <img v-if="props.logoUrl" :src="props.logoUrl" alt="Loading..." class="loading-logo" />
                 <p class="loading-text">Loading, please wait...</p>
             </div>
         </div>
@@ -16,8 +16,10 @@ const props = defineProps({
     logoUrl: {
         type: String,
         required: true,
+        default: ''
     },
 });
+
 
 const isLoading = ref(false);
 
@@ -36,7 +38,7 @@ const fetchData = async () => {
     startLoading();
     try {
         // Simulate a network request with a timeout
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         // Here you can handle your data after fetching
     } catch (error) {
         console.error("An error occurred:", error);
