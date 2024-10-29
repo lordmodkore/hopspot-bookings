@@ -22,7 +22,7 @@
                     <a :href="route('users.edit', user.id)" class="text-blue-600 hover:text-blue-800 transition mr-4">
                         <i class="fas fa-edit"></i>
                     </a>
-                    <button @click="deleteUser(user.id)" class="text-red-600 hover:text-red-800 transition">
+                    <button @click="confirmDelete(user.id)" class="text-red-600 hover:text-red-800 transition">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>
@@ -32,27 +32,58 @@
             </tr>
             </tbody>
         </table>
+        <DeleteModal :show="showDeleteModal" @onConfirm="handleRemove" @onCancel="cancelDelete" />
     </div>
 </template>
 
 <script setup>
-import { usePage } from '@inertiajs/vue3';
-import axios from 'axios';
-import {ZiggyVue} from "ziggy-js";
+import { ref } from 'vue';
+import { usePage, useForm } from '@inertiajs/vue3';
+import DeleteModal from '@/Components/DeleteModal.vue';
+import { route } from 'ziggy-js';
 
-const { users } = usePage().props; // Get users from Inertia page props
+const { users: initialUsers } = usePage().props;
+const users = ref(initialUsers); // Create a reactive users array
+const showDeleteModal = ref(false);
+const userToDelete = ref(null);
 
-const deleteUser = async (id) => {
-    if (confirm("Are you sure you want to delete this user?")) {
-        // Use Inertia to delete user
-        await axios.delete(`/users/${id}`).then(() => {
-            // Reload the page to reflect changes
-            window.location.reload();
-        }).catch(error => {
+// Function to confirm delete action
+const confirmDelete = (id) => {
+    userToDelete.value = id;
+    showDeleteModal.value = true;
+    console.log(`Confirm delete for user ID: ${id}`); // Debugging line
+};
+
+// Function to handle user removal
+const handleRemove = () => {
+    if (!userToDelete.value) {
+        console.warn("No user ID specified for deletion.");
+        return;
+    }
+
+    console.log(`Attempting to delete user with ID: ${userToDelete.value}`); // Debugging line
+
+    // Use `delete` to perform delete action
+    useForm({}).delete(route('users.destroy', userToDelete.value), {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Update the users array to remove the deleted user
+            users.value = users.value.filter(user => user.id !== userToDelete.value);
+            console.log('User deleted successfully'); // Debugging line
+            showDeleteModal.value = false;
+            userToDelete.value = null;
+        },
+        onError: (error) => {
             console.error("Error deleting user:", error);
             alert("Failed to delete user. Please try again.");
-        });
-    }
+        }
+    });
+};
+
+// Function to cancel delete action
+const cancelDelete = () => {
+    console.log('Delete cancelled'); // Debugging line
+    showDeleteModal.value = false;
+    userToDelete.value = null;
 };
 </script>
-
