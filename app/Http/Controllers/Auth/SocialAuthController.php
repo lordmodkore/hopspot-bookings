@@ -54,6 +54,7 @@ class SocialAuthController extends Controller
                     'email' => $googleUser->getEmail(),
                     'password' => bcrypt(uniqid()), // Use a random password for social login
                 ]);
+                $user->assignRole('staff');
             }
 
             // Log the user in
@@ -81,7 +82,10 @@ class SocialAuthController extends Controller
                 'email' => $socialUser->getEmail(),
                 'password' => bcrypt(Str::random(16)), // Create a random password
             ]);
+            $user->assignRole('staff'); // Assign the selected role
         }
+
+
 
         Auth::login($user, true);
         return redirect()->intended('/')->with('flash', ['success' => 'You are logged in!']);

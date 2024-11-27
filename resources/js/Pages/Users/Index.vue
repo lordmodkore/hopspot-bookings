@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto p-6 mt-6">
         <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-white">User Management</h1>
         <div class="mb-4">
             <a :href="route('users.create')" class="bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 transition">Create New User</a>

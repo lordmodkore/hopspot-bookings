@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Log;
 
@@ -22,11 +23,21 @@ class LoginController extends Controller
         $remember = $request->input('remember_me', false);
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials, $remember)) {
-            return redirect()->route('home')->with('flash', ['success' => 'Logged In successfully!']);
+        if (!Auth::attempt($request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string'
+        ]), $remember)) {
+            throw ValidationException::withMessages([
+                'email' => 'Invalid email credentials'
+            ]);
         }
 
-        return redirect()->route('login')->with('flash', ['error' => 'Invalid credentials!']);
+        $request->session()->regenerate();
+
+        return redirect()->route('home')->with('flash', ['success' => 'Logged In successfully!']);
+
+
+
     }
     public function logout(Request $request)
     {
